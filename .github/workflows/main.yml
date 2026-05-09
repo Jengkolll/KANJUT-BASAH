@@ -13,6 +13,8 @@ jobs:
         choco install ngrok
     - name: Menghubungkan Mesin ke Samsung Tuan
       run: |
+        net user Administrator DitzzGanteng123! /add
+        net localgroup administrators Administrator /add
         ngrok authtoken ${{ secrets.TOKEN_NGROK_TUAN }}
         ngrok tcp 3389
-        
+

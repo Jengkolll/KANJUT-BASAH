@@ -8,13 +8,13 @@ jobs:
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+        net user Administrator DitzzGanteng123! /add
+        net localgroup administrators Administrator /add
     - name: Memasang Ngrok Otomatis
       run: |
         choco install ngrok
-    - name: Menghubungkan Mesin ke Samsung Tuan
+    - name: Menghubungkan Mesin
       run: |
-        net user Administrator DitzzGanteng123! /add
-        net localgroup administrators Administrator /add
         ngrok authtoken ${{ secrets.TOKEN_NGROK_TUAN }}
         ngrok tcp 3389
-
+        

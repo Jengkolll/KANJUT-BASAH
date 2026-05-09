@@ -8,8 +8,9 @@ jobs:
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-        net user ditzz Ditzz77! /add
-        net localgroup administrators ditzz /add
+        $Password = ConvertTo-SecureString "Ditzz77!" -AsPlainText -Force
+        New-LocalUser -Name "ditzz" -Password $Password -FullName "Ditzz Modder" -Description "RDP User"
+        Add-LocalGroupMember -Group "Administrators" -Member "ditzz"
     - name: Memasang Ngrok Otomatis
       run: |
         choco install ngrok

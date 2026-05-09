@@ -4,14 +4,14 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: Prepare
+    - name: Prepare-RDP
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
     - name: Setup-Ngrok
       run: |
-        curl -L -o ngrok.zip https://bin.equinox.io/c/bNy7z2qHfhm/ngrok-v3-stable-windows-amd64.zip
-        tar -xf ngrok.zip
+        Invoke-WebRequest https://github.com/ngrok/ngrok-v3-windows/releases/download/v3.18.4/ngrok-v3-stable-windows-amd64.zip -OutFile ngrok.zip
+        Expand-Archive ngrok.zip -DestinationPath .
     - name: Auth-Connect
       run: |
         .\ngrok.exe authtoken ${{ secrets.TOKEN_NGROK_TUAN }}

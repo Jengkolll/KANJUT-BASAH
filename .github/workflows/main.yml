@@ -4,16 +4,15 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: Prepare-RDP
+    - name: Membuka Gerbang RDP
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-    - name: Setup-Ngrok
+    - name: Memasang Ngrok Otomatis
       run: |
-        curl -L -o ngrok.zip https://bin.equinox.io/c/bNy7z2qHfhm/ngrok-v3-stable-windows-amd64.zip
-        tar -xf ngrok.zip
-    - name: Auth-Connect
+        choco install ngrok
+    - name: Menghubungkan Mesin ke Samsung Tuan
       run: |
-        .\ngrok.exe authtoken ${{ secrets.TOKEN_NGROK_TUAN }}
-        .\ngrok.exe tcp 3389
+        ngrok authtoken ${{ secrets.TOKEN_NGROK_TUAN }}
+        ngrok tcp 3389
         

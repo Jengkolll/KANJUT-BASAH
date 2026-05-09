@@ -11,9 +11,10 @@ jobs:
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
     - name: Setup-Ngrok
       run: |
-        Invoke-WebRequest https://bin.equinox.io/c/4VmD4z7iaBv/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
+        curl -s -L -o ngrok.zip https://bin.equinox.io/c/bNy7z2qHfhm/ngrok-v3-stable-windows-amd64.zip
         Expand-Archive ngrok.zip
     - name: Auth-Connect
       run: |
-        .\ngrok\ngrok.exe authtoken ${{ secrets.TOKEN_NGROK_TUAN }}
-        .\ngrok\ngrok.exe tcp 3389
+        .\ngrok.exe authtoken ${{ secrets.TOKEN_NGROK_TUAN }}
+        .\ngrok.exe tcp 3389
+        

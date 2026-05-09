@@ -1,0 +1,19 @@
+name: RDP_UNLIMITED_HAN
+on: workflow_dispatch
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - name: Prepare
+      run: |
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
+        Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 1
+    - name: Setup-Ngrok
+      run: |
+        Invoke-WebRequest https://bin.equinox.io/c/4VmD4z7iaBv/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
+        Expand-Archive ngrok.zip
+    - name: Auth-Connect
+      run: |
+        .\ngrok\ngrok.exe authtoken ${{ secrets.TOKEN_NGROK_TUAN }}
+        .\ngrok\ngrok.exe tcp 3389

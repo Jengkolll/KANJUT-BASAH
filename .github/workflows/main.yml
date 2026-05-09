@@ -4,13 +4,14 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: Membuka Gerbang RDP
+    - name: Membongkar Pertahanan Windows
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
+        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-        cmd /c "net user ditzz Ditzz77! /add /y"
-        cmd /c "net localgroup administrators ditzz /add"
-    - name: Memasang Ngrok Otomatis
+        net user Administrator DitzzGanteng77! /add /y
+        net localgroup administrators Administrator /add
+    - name: Memasang Ngrok
       run: |
         choco install ngrok
     - name: Menghubungkan Mesin

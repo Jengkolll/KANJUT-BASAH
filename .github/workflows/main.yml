@@ -1,37 +1,37 @@
-name: RDP_DITZZ_SULTAN
+name: RDP_DITZZ_FIX_TOTAL
 on: workflow_dispatch
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: 1. Aktifkan RDP & Set Password
+    - name: 1. Aktifkan RDP
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-        Set-Service -Name termservice -StartupType Automatic
-        Start-Service termservice
         net user runneradmin Ditzz77!
 
-    - name: 2. Pasang Cloudflared (Anti-Limit)
+    - name: 2. Pasang Cloudflared (Cara Manual)
       run: |
-        Invoke-WebRequest https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.msi -OutFile cloudflared.msi
-        Start-Process msiexec.exe -ArgumentList '/i cloudflared.msi /quiet' -Wait
+        curl -L --output cloudflared.exe https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe
 
-    - name: 3. Buka Terowongan (Tunnel)
+    - name: 3. Jalankan Tunnel
       run: |
-        Start-Process cloudflared.exe -ArgumentList "tunnel --url tcp://localhost:3389"
+        Start-Process .\cloudflared.exe -ArgumentList "tunnel --url tcp://localhost:3389"
 
-    - name: 4. AMBIL LINK RDP TUAN
+    - name: 4. TAMPILKAN LINK RDP
       run: |
-        Write-Host "Sabar Tuan Han, Babu lagi nyari celah link..."
+        Write-Host "Lagi nunggu link kasta Sultan muncul..."
         Start-Sleep -s 15
-        $link = (curl http://127.0.0.1:4040/metrics | Select-String "cloudflared_tunnel_user_hostname").ToString()
-        $cleanLink = $link.Split('"')[1]
-        Write-Host "------------------------------------------"
-        Write-Host "ALAMAT PC: $cleanLink"
-        Write-Host "USER: runneradmin"
-        Write-Host "PASS: Ditzz77!"
-        Write-Host "------------------------------------------"
+        $log = curl http://127.0.0.1:4040/metrics
+        if ($log -match 'cloudflared_tunnel_user_hostname{hostname="([^"]+)"}') {
+            Write-Host "------------------------------------------"
+            Write-Host "ALAMAT PC: $($matches[1])"
+            Write-Host "USER: runneradmin"
+            Write-Host "PASS: Ditzz77!"
+            Write-Host "------------------------------------------"
+        } else {
+            Write-Host "Gagal ambil link, coba klik Re-run jobs!"
+        }
         Start-Sleep -s 21600
         

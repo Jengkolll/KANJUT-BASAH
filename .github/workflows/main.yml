@@ -8,8 +8,8 @@ jobs:
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-        net user runneradmin Ditzz77! /add
-        net localgroup administrators runneradmin /add
+        Set-Service -Name termservice -StartupType Automatic
+        Start-Service termservice
     - name: Pasang Cloudflared
       run: |
         Invoke-WebRequest https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.msi -OutFile cloudflared.msi

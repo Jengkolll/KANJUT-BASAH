@@ -1,39 +1,35 @@
-name: RDP_DITZZ_FINAL_V2
+name: RDP_DITZZ_BANTAI_MONYET
 on: workflow_dispatch
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: 1. Aktifkan RDP & Paksa Password
+    - name: 1. Aktifkan RDP
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-        # Kita ganti password user yang sudah ada, bukan bikin baru!
         net user runneradmin Ditzz77!
 
     - name: 2. Pasang Cloudflared
       run: |
         curl -L --output cloudflared.exe https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe
 
-    - name: 3. Jalankan Tunnel & Link
+    - name: 3. EKSEKUSI & PAKSA LINK MUNCUL
       run: |
-        Start-Process .\cloudflared.exe -ArgumentList "tunnel --url tcp://localhost:3389"
-        Write-Host "Menunggu link kasta Sultan muncul (30 detik)..."
-        Start-Sleep -s 30
-        $output = curl.exe -s http://127.0.0.1:4040/metrics
-        if ($output -match 'hostname="([^"]+)"') {
-            Write-Host "`n------------------------------------------"
-            Write-Host "ALAMAT PC: $($matches[1])"
-            Write-Host "USER: runneradmin"
-            Write-Host "PASS: Ditzz77!"
-            Write-Host "------------------------------------------"
+        Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `./cloudflared.exe tunnel --url tcp://localhost:3389`" -RedirectStandardOutput "link_rdp.txt"
+        Write-Host "Sabar Tuan, Babu lagi nunggu 45 detik biar link-nya mateng..."
+        Start-Sleep -s 45
+        Write-Host "------------------------------------------"
+        Write-Host "CEK LINK RDP DI BAWAH INI TUAN HAN:"
+        $cek = Get-Content "link_rdp.txt" | Select-String "trycloudflare.com"
+        if ($cek) {
+            Write-Host $cek
+        } else {
+            Write-Host "Masih sembunyi? Kita bongkar paksa log-nya:"
+            Get-Content "link_rdp.txt" -Tail 50
         }
-        # Looping biar gak mati
-        $i = 0
-        while($i -lt 360){
-          Write-Host "RDP HIDUP TUAN! - $(Get-Date)"
-          Start-Sleep -s 60
-          $i++
-        }
+        Write-Host "USER: runneradmin | PASS: Ditzz77!"
+        Write-Host "------------------------------------------"
+        $i = 0; while($i -lt 360){Write-Host "RDP ON - $(Get-Date)"; Start-Sleep -s 60; $i++}
         

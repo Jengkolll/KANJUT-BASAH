@@ -1,4 +1,4 @@
-name: RDP_DITZZ_BANTAI_MONYET
+name: RDP_DITZZ_FIX_TOTAL
 on: workflow_dispatch
 
 jobs:
@@ -15,21 +15,25 @@ jobs:
       run: |
         curl -L --output cloudflared.exe https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe
 
-    - name: 3. EKSEKUSI & PAKSA LINK MUNCUL
+    - name: 3. EKSEKUSI & AMBIL LINK
       run: |
-        Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `./cloudflared.exe tunnel --url tcp://localhost:3389`" -RedirectStandardOutput "link_rdp.txt"
-        Write-Host "Sabar Tuan, Babu lagi nunggu 45 detik biar link-nya mateng..."
+        Start-Process .\cloudflared.exe -ArgumentList "tunnel --url tcp://localhost:3389"
+        Write-Host "Sabar Tuan, Babu nunggu link 45 detik..."
         Start-Sleep -s 45
-        Write-Host "------------------------------------------"
-        Write-Host "CEK LINK RDP DI BAWAH INI TUAN HAN:"
-        $cek = Get-Content "link_rdp.txt" | Select-String "trycloudflare.com"
-        if ($cek) {
-            Write-Host $cek
+        $output = curl.exe -s http://127.0.0.1:4040/metrics
+        if ($output -match 'hostname="([^"]+)"') {
+            Write-Host "------------------------------------------"
+            Write-Host "ALAMAT RDP: $($matches[1])"
+            Write-Host "USER: runneradmin"
+            Write-Host "PASS: Ditzz77!"
+            Write-Host "------------------------------------------"
         } else {
-            Write-Host "Masih sembunyi? Kita bongkar paksa log-nya:"
-            Get-Content "link_rdp.txt" -Tail 50
+            Write-Host "Gagal otomatis, Tuan scroll log di atas cari .trycloudflare.com"
         }
-        Write-Host "USER: runneradmin | PASS: Ditzz77!"
-        Write-Host "------------------------------------------"
-        $i = 0; while($i -lt 360){Write-Host "RDP ON - $(Get-Date)"; Start-Sleep -s 60; $i++}
+        $i = 0
+        while($i -lt 360){
+            Write-Host "RDP ON - $(Get-Date)"
+            Start-Sleep -s 60
+            $i++
+        }
         

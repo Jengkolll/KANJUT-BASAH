@@ -1,4 +1,4 @@
-name: RDP_DITZZ_FINAL_LINK
+name: RDP_DITZZ_6HOURS
 on: workflow_dispatch
 
 jobs:
@@ -9,27 +9,30 @@ jobs:
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-        net user runneradmin Ditzz77!
+        net user runneradmin Ditzz77! /add
+        net localgroup administrators runneradmin /add
 
     - name: 2. Pasang Cloudflared
       run: |
         curl -L --output cloudflared.exe https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe
 
-    - name: 3. Jalankan Tunnel & Tampilkan Link
+    - name: 3. Jalankan Tunnel (Anti-Close)
       run: |
         Start-Process .\cloudflared.exe -ArgumentList "tunnel --url tcp://localhost:3389"
-        Write-Host "Menunggu terowongan Sultan terbuka..."
+        Write-Host "Menunggu link kasta Sultan..."
         Start-Sleep -s 30
-        $output = curl.exe -s http://127.0.0.1:4040/metrics
-        if ($output -match 'hostname="([^"]+)"') {
-            Write-Host "`n------------------------------------------"
-            Write-Host "ALAMAT RDP TUAN: $($matches[1])"
-            Write-Host "USER: runneradmin"
-            Write-Host "PASS: Ditzz77!"
-            Write-Host "------------------------------------------"
-        } else {
-            Write-Host "Link belum muncul di metrics, cek manual di bawah ini:"
-            ./cloudflared.exe tunnel --url tcp://localhost:3389
+        $log = curl.exe -s http://127.0.0.1:4040/metrics
+        $log -match 'hostname="([^"]+)"'
+        Write-Host "------------------------------------------"
+        Write-Host "ALAMAT PC: $($matches[1])"
+        Write-Host "USER: runneradmin"
+        Write-Host "PASS: Ditzz77!"
+        Write-Host "------------------------------------------"
+        # JURUS BIAR GAK MATI (LOOPING 6 JAM)
+        $i = 0
+        while($i -lt 360){
+          Write-Host "RDP MASIH HIDUP TUAN! - $(Get-Date)"
+          Start-Sleep -s 60
+          $i++
         }
-        Start-Sleep -s 21600
         

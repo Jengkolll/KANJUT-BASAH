@@ -1,39 +1,22 @@
-name: RDP_DITZZ_FIX_TOTAL
+name: RDP_DITZZ_SULTAN_FINAL
 on: workflow_dispatch
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: 1. Aktifkan RDP
+    - name: 1. Persiapan RDP
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
         net user runneradmin Ditzz77!
 
-    - name: 2. Pasang Cloudflared
+    - name: 2. Download Cloudflared
       run: |
         curl -L --output cloudflared.exe https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe
 
-    - name: 3. EKSEKUSI & AMBIL LINK
+    - name: 3. JALANKAN TUNNEL (AMBIL LINK DI SINI)
       run: |
-        Start-Process .\cloudflared.exe -ArgumentList "tunnel --url tcp://localhost:3389"
-        Write-Host "Sabar Tuan, Babu nunggu link 45 detik..."
-        Start-Sleep -s 45
-        $output = curl.exe -s http://127.0.0.1:4040/metrics
-        if ($output -match 'hostname="([^"]+)"') {
-            Write-Host "------------------------------------------"
-            Write-Host "ALAMAT RDP: $($matches[1])"
-            Write-Host "USER: runneradmin"
-            Write-Host "PASS: Ditzz77!"
-            Write-Host "------------------------------------------"
-        } else {
-            Write-Host "Gagal otomatis, Tuan scroll log di atas cari .trycloudflare.com"
-        }
-        $i = 0
-        while($i -lt 360){
-            Write-Host "RDP ON - $(Get-Date)"
-            Start-Sleep -s 60
-            $i++
-        }
+        Write-Host "Tunggu 15 detik, link bakal muncul di bawah..."
+        ./cloudflared.exe tunnel --url tcp://localhost:3389
         

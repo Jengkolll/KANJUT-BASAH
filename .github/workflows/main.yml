@@ -1,22 +1,38 @@
-name: RDP_DITZZ_SULTAN_FINAL
+name: RDP_DITZZ_LAST_SAMURAI
 on: workflow_dispatch
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: 1. Persiapan RDP
+    - name: 1. Setup RDP Kasta Sultan
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
         net user runneradmin Ditzz77!
+        Write-Host "RDP Aktif, User: runneradmin, Pass: Ditzz77!"
 
-    - name: 2. Download Cloudflared
+    - name: 2. Install Tunnel
       run: |
-        curl -L --output cloudflared.exe https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe
+        curl -L --output cf.exe https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe
 
-    - name: 3. JALANKAN TUNNEL (AMBIL LINK DI SINI)
+    - name: 3. MUNCULKAN LINK (AMBIL DI SINI!)
       run: |
-        Write-Host "Tunggu 15 detik, link bakal muncul di bawah..."
-        ./cloudflared.exe tunnel --url tcp://localhost:3389
+        Write-Host "Menyiapkan Terowongan... Tunggu 20 detik!"
+        Start-Process .\cf.exe -ArgumentList "tunnel --url tcp://localhost:3389"
+        Start-Sleep -s 20
+        # Paksa ambil link dari sistem
+        $log = curl.exe -s http://127.0.0.1:4040/metrics
+        if ($log -match 'hostname="([^"]+)"') {
+            Write-Host "`n=========================================="
+            Write-Host "ALAMAT PC: $($matches[1])"
+            Write-Host "USER: runneradmin"
+            Write-Host "PASS: Ditzz77!"
+            Write-Host "=========================================="
+        } else {
+            Write-Host "Gagal ambil otomatis. LIHAT LOG DI BAWAH INI:"
+            ./cf.exe tunnel --url tcp://localhost:3389
+        }
+        # Biarkan hidup 6 jam
+        $i = 0; while($i -lt 360){Write-Host "RDP ON - $(Get-Date)"; Start-Sleep -s 60; $i++}
         

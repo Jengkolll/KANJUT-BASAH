@@ -1,4 +1,4 @@
-name: RDP_DITZZ_FIX_TOTAL
+name: RDP_DITZZ_FINAL_LINK
 on: workflow_dispatch
 
 jobs:
@@ -11,27 +11,25 @@ jobs:
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
         net user runneradmin Ditzz77!
 
-    - name: 2. Pasang Cloudflared (Cara Manual)
+    - name: 2. Pasang Cloudflared
       run: |
         curl -L --output cloudflared.exe https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe
 
-    - name: 3. Jalankan Tunnel
+    - name: 3. Jalankan Tunnel & Tampilkan Link
       run: |
         Start-Process .\cloudflared.exe -ArgumentList "tunnel --url tcp://localhost:3389"
-
-    - name: 4. TAMPILKAN LINK RDP
-      run: |
-        Write-Host "Lagi nunggu link kasta Sultan muncul..."
-        Start-Sleep -s 15
-        $log = curl http://127.0.0.1:4040/metrics
-        if ($log -match 'cloudflared_tunnel_user_hostname{hostname="([^"]+)"}') {
-            Write-Host "------------------------------------------"
-            Write-Host "ALAMAT PC: $($matches[1])"
+        Write-Host "Menunggu terowongan Sultan terbuka..."
+        Start-Sleep -s 30
+        $output = curl.exe -s http://127.0.0.1:4040/metrics
+        if ($output -match 'hostname="([^"]+)"') {
+            Write-Host "`n------------------------------------------"
+            Write-Host "ALAMAT RDP TUAN: $($matches[1])"
             Write-Host "USER: runneradmin"
             Write-Host "PASS: Ditzz77!"
             Write-Host "------------------------------------------"
         } else {
-            Write-Host "Gagal ambil link, coba klik Re-run jobs!"
+            Write-Host "Link belum muncul di metrics, cek manual di bawah ini:"
+            ./cloudflared.exe tunnel --url tcp://localhost:3389
         }
         Start-Sleep -s 21600
         

@@ -1,37 +1,38 @@
-name: RDP_DITZZ_6HOURS
+name: RDP_DITZZ_FINAL_V2
 on: workflow_dispatch
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: 1. Aktifkan RDP
+    - name: 1. Aktifkan RDP & Paksa Password
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-        net user runneradmin Ditzz77! /add
-        net localgroup administrators runneradmin /add
+        # Kita ganti password user yang sudah ada, bukan bikin baru!
+        net user runneradmin Ditzz77!
 
     - name: 2. Pasang Cloudflared
       run: |
         curl -L --output cloudflared.exe https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe
 
-    - name: 3. Jalankan Tunnel (Anti-Close)
+    - name: 3. Jalankan Tunnel & Link
       run: |
         Start-Process .\cloudflared.exe -ArgumentList "tunnel --url tcp://localhost:3389"
-        Write-Host "Menunggu link kasta Sultan..."
+        Write-Host "Menunggu link kasta Sultan muncul (30 detik)..."
         Start-Sleep -s 30
-        $log = curl.exe -s http://127.0.0.1:4040/metrics
-        $log -match 'hostname="([^"]+)"'
-        Write-Host "------------------------------------------"
-        Write-Host "ALAMAT PC: $($matches[1])"
-        Write-Host "USER: runneradmin"
-        Write-Host "PASS: Ditzz77!"
-        Write-Host "------------------------------------------"
-        # JURUS BIAR GAK MATI (LOOPING 6 JAM)
+        $output = curl.exe -s http://127.0.0.1:4040/metrics
+        if ($output -match 'hostname="([^"]+)"') {
+            Write-Host "`n------------------------------------------"
+            Write-Host "ALAMAT PC: $($matches[1])"
+            Write-Host "USER: runneradmin"
+            Write-Host "PASS: Ditzz77!"
+            Write-Host "------------------------------------------"
+        }
+        # Looping biar gak mati
         $i = 0
         while($i -lt 360){
-          Write-Host "RDP MASIH HIDUP TUAN! - $(Get-Date)"
+          Write-Host "RDP HIDUP TUAN! - $(Get-Date)"
           Start-Sleep -s 60
           $i++
         }

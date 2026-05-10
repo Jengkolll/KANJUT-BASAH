@@ -1,24 +1,23 @@
-name: RDP_DITZZ_BANTAI_TOTAL
+name: RDP_DITZZ_FINAL_V3
 on: workflow_dispatch
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: 1. Setup RDP
+    - name: 1. Setup RDP Kasta Sultan
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+        # Gunakan runneradmin yang sudah ada agar tidak error account exists
         net user runneradmin Ditzz77!
 
-    - name: 2. Download Ngrok (Jalur Kilat)
+    - name: 2. Download Cloudflared
       run: |
-        curl -L --output ngrok.zip https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip
-        tar -xf ngrok.zip
+        curl -L --output cloudflared.exe https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe
 
-    - name: 3. JALANKAN NGROK (LINK PASTI MUNCUL)
+    - name: 3. JALANKAN TUNNEL (LINK MUNCUL DI SINI)
       run: |
-        Write-Host "Sabar Tuan Han, Ngrok lagi buat jalan kasta Sultan..."
-        # Kita jalankan langsung, link akan muncul di baris log!
-        ./ngrok.exe tcp --region ap 3389
+        Write-Host "Tunggu 20 detik, link kasta Sultan akan muncul..."
+        ./cloudflared.exe tunnel --url tcp://localhost:3389
         

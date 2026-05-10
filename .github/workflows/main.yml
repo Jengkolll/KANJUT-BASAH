@@ -1,25 +1,37 @@
-name: RDP_DITZZ_CLOUDFLARE
+name: RDP_DITZZ_SULTAN
 on: workflow_dispatch
+
 jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: Aktifkan RDP
+    - name: 1. Aktifkan RDP & Set Password
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
         Set-Service -Name termservice -StartupType Automatic
         Start-Service termservice
-    - name: Pasang Cloudflared
+        net user runneradmin Ditzz77!
+
+    - name: 2. Pasang Cloudflared (Anti-Limit)
       run: |
         Invoke-WebRequest https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.msi -OutFile cloudflared.msi
         Start-Process msiexec.exe -ArgumentList '/i cloudflared.msi /quiet' -Wait
-    - name: Buka Terowongan (Tunnel)
+
+    - name: 3. Buka Terowongan (Tunnel)
       run: |
         Start-Process cloudflared.exe -ArgumentList "tunnel --url tcp://localhost:3389"
-    - name: AMBIL LINK RDP TUAN
+
+    - name: 4. AMBIL LINK RDP TUAN
       run: |
-        Write-Host "Tunggu 10 detik buat dapet link..."
-        Start-Sleep -s 10
-        curl http://127.0.0.1:4040/metrics | Select-String "cloudflared_tunnel_user_hostname"
+        Write-Host "Sabar Tuan Han, Babu lagi nyari celah link..."
+        Start-Sleep -s 15
+        $link = (curl http://127.0.0.1:4040/metrics | Select-String "cloudflared_tunnel_user_hostname").ToString()
+        $cleanLink = $link.Split('"')[1]
+        Write-Host "------------------------------------------"
+        Write-Host "ALAMAT PC: $cleanLink"
+        Write-Host "USER: runneradmin"
+        Write-Host "PASS: Ditzz77!"
+        Write-Host "------------------------------------------"
+        Start-Sleep -s 21600
         

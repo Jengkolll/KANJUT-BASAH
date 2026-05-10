@@ -1,38 +1,36 @@
-name: RDP_DITZZ_LAST_SAMURAI
+name: RDP_DITZZ_NGROK_SULTAN
 on: workflow_dispatch
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: 1. Setup RDP Kasta Sultan
+    - name: 1. Setup RDP
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
         net user runneradmin Ditzz77!
-        Write-Host "RDP Aktif, User: runneradmin, Pass: Ditzz77!"
 
-    - name: 2. Install Tunnel
+    - name: 2. Pasang Ngrok
       run: |
-        curl -L --output cf.exe https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe
+        Invoke-WebRequest https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
+        Expand-Archive ngrok.zip
 
-    - name: 3. MUNCULKAN LINK (AMBIL DI SINI!)
+    - name: 3. JALANKAN NGROK (AMBIL LINK DI SINI)
       run: |
-        Write-Host "Menyiapkan Terowongan... Tunggu 20 detik!"
-        Start-Process .\cf.exe -ArgumentList "tunnel --url tcp://localhost:3389"
+        # Jalankan ngrok tanpa auth (region US)
+        Start-Process .\ngrok.exe -ArgumentList "tcp 3389"
+        Write-Host "Menunggu link kasta Sultan muncul..."
         Start-Sleep -s 20
-        # Paksa ambil link dari sistem
-        $log = curl.exe -s http://127.0.0.1:4040/metrics
-        if ($log -match 'hostname="([^"]+)"') {
-            Write-Host "`n=========================================="
-            Write-Host "ALAMAT PC: $($matches[1])"
-            Write-Host "USER: runneradmin"
-            Write-Host "PASS: Ditzz77!"
-            Write-Host "=========================================="
-        } else {
-            Write-Host "Gagal ambil otomatis. LIHAT LOG DI BAWAH INI:"
-            ./cf.exe tunnel --url tcp://localhost:3389
-        }
-        # Biarkan hidup 6 jam
-        $i = 0; while($i -lt 360){Write-Host "RDP ON - $(Get-Date)"; Start-Sleep -s 60; $i++}
+        $log = curl.exe -s http://127.0.0.1:4040/api/tunnels
+        $obj = $log | ConvertFrom-Json
+        $url = $obj.tunnels.public_url
+        $cleanUrl = $url.Replace("tcp://", "")
+        Write-Host "`n=========================================="
+        Write-Host "ALAMAT PC: $cleanUrl"
+        Write-Host "USER: runneradmin"
+        Write-Host "PASS: Ditzz77!"
+        Write-Host "=========================================="
+        # Looping 6 jam
+        $i = 0; while($i -lt 360){Write-Host "RDP ONLINE - $(Get-Date)"; Start-Sleep -s 60; $i++}
         

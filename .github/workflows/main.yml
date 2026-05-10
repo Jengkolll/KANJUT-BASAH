@@ -1,20 +1,25 @@
-name: RDP_UNLIMITED_HAN
+name: RDP_DITZZ_CLOUDFLARE
 on: workflow_dispatch
 jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: Membongkar Pertahanan Windows
+    - name: Aktifkan RDP
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
-        Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name "UserAuthentication" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
-        net user Administrator Hann77 /add /y
-        net localgroup administrators Administrator /add
-    - name: Memasang Ngrok
+        net user runneradmin Ditzz77! /add
+        net localgroup administrators runneradmin /add
+    - name: Pasang Cloudflared
       run: |
-        choco install ngrok
-    - name: Menghubungkan Mesin
+        Invoke-WebRequest https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.msi -OutFile cloudflared.msi
+        Start-Process msiexec.exe -ArgumentList '/i cloudflared.msi /quiet' -Wait
+    - name: Buka Terowongan (Tunnel)
       run: |
-        ngrok authtoken ${{ secrets.TOKEN_NGROK_TUAN }}
-        ngrok tcp 3389
+        Start-Process cloudflared.exe -ArgumentList "tunnel --url tcp://localhost:3389"
+    - name: AMBIL LINK RDP TUAN
+      run: |
+        Write-Host "Tunggu 10 detik buat dapet link..."
+        Start-Sleep -s 10
+        curl http://127.0.0.1:4040/metrics | Select-String "cloudflared_tunnel_user_hostname"
+        

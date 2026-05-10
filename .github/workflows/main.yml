@@ -1,26 +1,25 @@
-name: RDP_DITZZ_NGROK_SULTAN
+name: RDP_DITZZ_FINAL_BANTAI
 on: workflow_dispatch
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: 1. Setup RDP
+    - name: 1. Setup RDP Kasta Sultan
       run: |
         Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0
         Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
         net user runneradmin Ditzz77!
 
-    - name: 2. Pasang Ngrok
+    - name: 2. Pasang Ngrok (Jalur Cepat)
       run: |
-        Invoke-WebRequest https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
-        Expand-Archive ngrok.zip
+        curl -L --output ngrok.zip https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip
+        tar -xf ngrok.zip
 
-    - name: 3. JALANKAN NGROK (AMBIL LINK DI SINI)
+    - name: 3. EKSEKUSI & AMBIL LINK
       run: |
-        # Jalankan ngrok tanpa auth (region US)
-        Start-Process .\ngrok.exe -ArgumentList "tcp 3389"
-        Write-Host "Menunggu link kasta Sultan muncul..."
+        Write-Host "Menyiapkan Terowongan Ngrok... Sabar Tuan Han!"
+        Start-Process .\ngrok.exe -ArgumentList "tcp --region ap 3389"
         Start-Sleep -s 20
         $log = curl.exe -s http://127.0.0.1:4040/api/tunnels
         $obj = $log | ConvertFrom-Json
@@ -31,6 +30,5 @@ jobs:
         Write-Host "USER: runneradmin"
         Write-Host "PASS: Ditzz77!"
         Write-Host "=========================================="
-        # Looping 6 jam
-        $i = 0; while($i -lt 360){Write-Host "RDP ONLINE - $(Get-Date)"; Start-Sleep -s 60; $i++}
+        $i = 0; while($i -lt 360){Write-Host "RDP ON - $(Get-Date)"; Start-Sleep -s 60; $i++}
         
